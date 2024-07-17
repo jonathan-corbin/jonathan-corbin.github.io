@@ -1,4 +1,9 @@
-![[photos/Lame.png]]
+---
+layout: post
+title: Lame
+date: 2024-07-17 10:00:00 -0400
+---
+
 Lame box is an easy challenge suitable for beginners. It involves discovering open ports like FTP and SMB using Nmap. A vulnerability in Samba 3.0.20-Debian allows for remote command execution, making it a straightforward introduction to penetration testing.
 # Recon
 
