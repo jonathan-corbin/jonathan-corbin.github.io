@@ -1,0 +1,65 @@
+/* --- Console Hacker look + better readability --- */
+:root{
+  --bg:#000;            /* page background */
+  --fg:#00ff66;         /* primary green */
+  --fg-dim:#66ffcc;     /* link / dim text */
+  --accent:#6b21a8;     /* purple accent */
+  --code-bg:#001100;    /* code block bg */
+  --code-border:#003300;
+  --maxw: 1100px;       /* content width */
+  --fs: 18px;           /* base font size */
+  --lh: 1.7;
+}
+
+html,body{
+  background:var(--bg)!important;
+  color:var(--fg)!important;
+  font-family:"Fira Code","Courier New",monospace;
+  font-size:var(--fs);
+  line-height:var(--lh);
+}
+
+.container, .page-content, .wrapper, main, article{
+  max-width:var(--maxw)!important;
+  margin:2rem auto!important;
+  padding:0 1.25rem!important;
+}
+
+a{ color:var(--fg-dim); text-decoration:none; }
+a:hover{ color:#ccff99; text-decoration:underline; }
+
+/* Headings */
+h1,h2,h3{ color:var(--fg); margin-top:1.6rem; }
+h1{ border-bottom:1px solid var(--fg); padding-bottom:.25rem; }
+
+/* Header bar (if theme renders one) */
+.site-header, header{
+  background:var(--accent)!important;
+  border-bottom:2px solid var(--fg);
+}
+
+/* Lists look “terminal” */
+ul{ list-style:none; padding-left:0; }
+ul li::before{ content:"- "; color:var(--fg); }
+
+/* Code blocks */
+pre, code{
+  background:var(--code-bg) !important;
+  color:var(--fg) !important;
+  border:1px solid var(--code-border);
+}
+pre{ padding:.9rem 1rem; overflow:auto; }
+code{ padding:.05rem .25rem; }
+
+/* Tables (loot/summary) */
+table{ width:100%; border-collapse:collapse; }
+th,td{ border:1px solid var(--code-border); padding:.5rem .6rem; }
+th{ background:#021802; }
+
+/* “terminal divider” */
+.hr {
+  margin: 1.25rem 0; border-top:1px dashed var(--fg); opacity:.7;
+}
+
+/* Make the post list readable and not tiny */
+.post-list li { margin: .6rem 0; }
