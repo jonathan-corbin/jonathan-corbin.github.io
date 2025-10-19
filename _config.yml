@@ -1,19 +1,31 @@
+# --- Site Info ---
 title: "HackTheBox Writeups"
-description: "Documenting my OSCP journey through machines on HackTheBox, without Metasploit."
+description: "OSCP-style walkthroughs for HackTheBox machines — no Metasploit, full manual exploitation."
 url: "https://jonathan-corbin.github.io"
 
+# --- Theme ---
 remote_theme: b2a3e8/jekyll-theme-console
 plugins:
   - jekyll-remote-theme
+  - jekyll-seo-tag
 
-# Basic site info
-author: Jonathan Corbin
-email: 
+# --- Author ---
+author: "Jonathan Corbin"
 
-# Optional links (these show up in header/footer)
-footer: "Follow yourself"
-social_links:
-
-
-# Posts per page
+# --- Posts ---
 paginate: 10
+paginate_path: "/page:num/"
+permalink: /:title/
+
+# --- Markdown / Build Settings ---
+markdown: kramdown
+highlighter: rouge
+
+# --- Exclude unnecessary files ---
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - .github
+  - node_modules
