@@ -20,7 +20,8 @@ permalink: /:title/
 # --- Markdown / Build Settings ---
 markdown: kramdown
 highlighter: rouge
-
+include:
+  - _includes
 # --- Exclude unnecessary files ---
 exclude:
   - README.md
