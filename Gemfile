@@ -1,9 +1,8 @@
-# frozen_string_literal: true
-
 source "https://rubygems.org"
 
-gem "jekyll-theme-chirpy", "~> 7.0", ">= 7.0.1"
+gem "jekyll", "~> 4.4"
+gem "jekyll-remote-theme"
 
-group :test do
-  gem "html-proofer", "~> 5.0"
+group :jekyll_plugins do
+  gem "jekyll-paginate"
 end
