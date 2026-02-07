@@ -1,7 +1,3 @@
-# Jonathan Corbin — Security Portfolio
+# Security Labs
 
-Collection of technical walkthroughs and hands-on lab notes in controlled environments.
-
-- Structured case studies  
-- Repeatable methodology  
-- Technical documentation and evidence
+Technical walkthroughs and hands-on lab notes from controlled environments.
