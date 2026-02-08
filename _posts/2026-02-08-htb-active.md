@@ -21,3 +21,9 @@ I began with a full Nmap scan to enumerate all open TCP ports and identify the s
 I parsed the results to store all open ports in a variable for the next scan.
 
 `ports=$(awk '/\/tcp/ && /open/ { split($1,a,"/"); p = (p ? p "," a[1] : a[1]) } END{ print p }' scans/all_ports.txt)`
+
+I then ran a targeted service and script scan against only the open ports to fingerprint running services and gather additional metadata.
+
+`sudo nmap -sC -sV -p $ports 10.129.17.166 -oN scans/services.txt -Pn`
+
+![](/assets/img/htb/Active/active3.png)
