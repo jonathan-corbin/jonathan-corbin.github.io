@@ -28,7 +28,7 @@ I parsed the results to store all open ports in a variable for follow-up scannin
 
 ---
 
-###Nmap — Service Enumeration
+### Nmap — Service Enumeration
 I then ran a targeted service and script scan against only the discovered open ports.
 
 `sudo nmap -sC -sV -p $ports 10.129.17.166 -oN scans/services.txt -Pn`
@@ -45,7 +45,7 @@ I added the target hostname to /etc/hosts.
 ---
 
 ## Service Enumeration
-### SMB Enumeration
+### SMB
 AD is confirmed. Enumerate SMB with NetExec for any open shares.
 
 `nxc smb 10.129.18.74 -u '' -p '' --shares`
