@@ -10,10 +10,11 @@ title: Security Labs
 tagline: Practical labs, writeups, and tooling
 
 description: >-
-  A minimal, responsive and feature-rich Jekyll theme for technical writing.
+  Technical notes and walkthroughs focused on practical security testing,
+  Active Directory, and hands-on labs..
 
 url: "https://jonathan-corbin.github.io"
-
+avatar: /assets/img/favicons/avatar.png
 github:
   username: jonathan-corbin
 
