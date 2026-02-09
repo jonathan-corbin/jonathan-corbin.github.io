@@ -52,9 +52,7 @@ smbclient //10.129.18.74/Replication -N -I 10.129.18.74 -c "recurse; prompt; mge
 ![](/assets/img/htb/Active/active05.png)
 
 Quickly inspect what was pulled down.
-
 `tree -a -h -f --dirsfirst`
-
 ![](/assets/img/htb/Active/active04.png)
 
 Inside is a Groups.xml file — a classic GPP artifact known to store recoverable credentials. 
