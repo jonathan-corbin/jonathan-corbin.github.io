@@ -70,7 +70,7 @@ Typical location:
 `\\<DOMAIN>\SYSVOL\<DOMAIN>\Policies\{GUID}\Machine\Preferences\Groups\Groups.xml`
 If present, this usually yields a reusable local admin password and can sometimes lead to domain compromise.
 Primary tool to exploit:
-https://github.com/t0thkr1s/gpp-decrypt
+[gpp-decrypt](https://github.com/t0thkr1s/gpp-decrypt)
 
 `grep -i cpassword Groups.xml`
 ![](/assets/img/htb/Active/active065.png)
