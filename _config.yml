@@ -14,7 +14,6 @@ description: >-
   Active Directory, and hands-on labs..
 
 url: "https://jonathan-corbin.github.io"
-avatar: /assets/img/avatar.png
 github:
   username: jonathan-corbin
 
@@ -59,7 +58,7 @@ theme_mode:
 
 cdn:
 
-avatar:
+avatar: /assets/img/avatar.png
 
 social_preview_image:
 
