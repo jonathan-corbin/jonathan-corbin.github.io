@@ -9,7 +9,11 @@ image:
   path: /assets/img/htb/Active/active1.png
   alt: "HTB Active"
 ---
+
 Active is a retired Windows box that focuses on Active Directory enumeration, credential exposure via Group Policy Preferences (GPP), and abuse of Kerberos through Kerberoasting to pivot from a service account to domain administrator.
+
+---
+
 ## Recon
 ### Nmap Scan
 I began with a full TCP sweep to identify all open ports on the target.
@@ -37,3 +41,19 @@ With basic AD services confirmed, I moved on to SMB and used NetExec to check wh
 `nxc smb 10.129.18.74 -u '' -p '' --shares`
 
 ![](/assets/img/htb/Active/active03.png)
+
+SMB shows a readable share called Replication. I use smbclient to pull the share.
+
+```mkdir -p Replication && cd Replication
+smbclient //10.129.18.74/Replication -N -I 10.129.18.74 -c "recurse; prompt; mget *"
+```
+
+![](/assets/img/htb/Active/active05.png)
+
+Quickly inspect what was pulled down.
+
+`tree -a -h -f --dirsfirst`
+
+![](/assets/img/htb/Active/active04.png)
+
+
