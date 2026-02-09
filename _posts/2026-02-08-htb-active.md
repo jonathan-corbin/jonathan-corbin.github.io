@@ -36,7 +36,7 @@ I added the target hostname to /etc/hosts.
 
 `echo '10.129.18.74 active.htb' | sudo tee -a /etc/hosts`
 
-AD is confirmed, I choose to enumerate SMB with NetExec for any open shares.
+AD is confirmed, lets enumerate SMB with NetExec for any open shares.
 
 `nxc smb 10.129.18.74 -u '' -p '' --shares`
 
@@ -44,14 +44,12 @@ AD is confirmed, I choose to enumerate SMB with NetExec for any open shares.
 
 SMB shows a readable share called Replication. I use `smbclient` to pull the share.
 
-```console
-mkdir -p Replication && cd Replication
-smbclient //10.129.18.74/Replication -N -I 10.129.18.74 -c "recurse; prompt; mget *"
-```
+`mkdir -p Replication && cd Replication`
+`smbclient //10.129.18.74/Replication -N -I 10.129.18.74 -c "recurse; prompt; mget *"`
 
 ![](/assets/img/htb/Active/active05.png)
 
-Quickly inspect what was pulled down.
+Inspect what was pulled down.
 `tree -a -h -f --dirsfirst`
 ![](/assets/img/htb/Active/active04.png)
 
