@@ -36,15 +36,16 @@ I added the target hostname to /etc/hosts.
 
 `echo '10.129.18.74 active.htb' | sudo tee -a /etc/hosts`
 
-With basic AD services confirmed, I moved on to SMB and used NetExec to check what shares were accessible without authentication.
+AD is confirmed, I choose to enumerate SMB with NetExec for any open shares.
 
 `nxc smb 10.129.18.74 -u '' -p '' --shares`
 
 ![](/assets/img/htb/Active/active03.png)
 
-SMB shows a readable share called Replication. I use smbclient to pull the share.
+SMB shows a readable share called Replication. I use `smbclient` to pull the share.
 
-```mkdir -p Replication && cd Replication
+```
+mkdir -p Replication && cd Replication
 smbclient //10.129.18.74/Replication -N -I 10.129.18.74 -c "recurse; prompt; mget *"
 ```
 
