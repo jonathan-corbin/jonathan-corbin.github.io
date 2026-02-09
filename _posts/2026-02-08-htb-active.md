@@ -2,7 +2,7 @@
 title: "Active"
 date: 2026-02-08
 categories: [HTB]
-tags: [windows, active-directory]
+tags: [windows, active-directory, gpp-decrypt, kerberoasting]
 toc: true
 
 image:
