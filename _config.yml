@@ -16,16 +16,20 @@ description: >-
 url: "https://jonathan-corbin.github.io"
 github:
   username: jonathan-corbin
-
+  
+linkedin:
+  username: corbinjonathan
+  
 twitter:
   username: _jonathancorbin
 
 social:
   name: Jonathan Corbin
   links:
-    - https://twitter.com/_jonathancorbin
     - https://github.com/jonathan-corbin
     - https://www.linkedin.com/in/corbinjonathan
+    - https://app.hackthebox.com/public/users/1480282
+    - https://x.com/_jonathancorbin
 
 webmaster_verifications:
   google:
