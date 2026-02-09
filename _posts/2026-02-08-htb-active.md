@@ -52,7 +52,7 @@ AD is confirmed. Enumerate SMB with NetExec for any open shares.
 
 ![](/assets/img/htb/Active/active03.png)
 
-SMB shows a readable share called Replication. use `smbclient` to pull the share.
+SMB shows a readable share called Replication. Use `smbclient` to pull the share.
 
 `mkdir -p Replication && cd Replication`
 
