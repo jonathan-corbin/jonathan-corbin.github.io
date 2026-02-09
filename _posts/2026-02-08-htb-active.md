@@ -63,7 +63,14 @@ Inspect what was pulled down.
 ---
 
 ## Initial Access
+### GPP cPassword (Groups.xml)
 Inside is a Groups.xml file — a classic GPP artifact known to store recoverable credentials. 
+Group Policy Preferences (GPP) allowed administrators to push local users, passwords, and group changes through policy files stored in SYSVOL. These files often contain a field called cpassword, which is reversibly encrypted with a public AES key — meaning anyone who can read SYSVOL can decrypt it.
+Typical location:
+`\\<DOMAIN>\SYSVOL\<DOMAIN>\Policies\{GUID}\Machine\Preferences\Groups\Groups.xml`
+If present, this usually yields a reusable local admin password and can sometimes lead to domain compromise.
+Primary tool to exploit:
+https://github.com/t0thkr1s/gpp-decrypt
 
 `grep -i cpassword Groups.xml`
 ![](/assets/img/htb/Active/active065.png)
