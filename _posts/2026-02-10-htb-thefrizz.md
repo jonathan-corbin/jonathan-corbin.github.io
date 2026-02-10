@@ -90,15 +90,19 @@ I then abused the vulnerable endpoint to write the file to the server. gibbonPer
 ![](assets/img/htb/thefrizz/thefrizz14.png)
 
 What each parameter does:
+
 `img=image/png;asdf,${b64}`  
   The server splits on the comma, base64-decodes everything on the right, and writes it to disk.  
   The `image/png;asdf` portion is just filler to satisfy the parser.
+  
 `path=shell.php`  
   Controls the output filename. Because extensions are not restricted, I can choose `.php`.
+  
 `gibbonPersonID=0000000001`  
   A required application field that influences where the file is saved.
 
 If the upload succeeds, the endpoint echoes the filename back:
+
 `shell.php%`
 
 #### Verify remote code execution
