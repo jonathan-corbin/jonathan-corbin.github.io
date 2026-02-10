@@ -10,7 +10,7 @@ image:
   alt: "TheFrizz"
 ---
 
-TheFrizz is a retired Windows Server 2022 Active Directory box that chains a vulnerable Gibbon-LMS file upload (CVE-2023-45878) to gain a web shell, harvest database credentials, pivot into AD with Kerberos authentication, and abuse GPO permissions to escalate from a low-privileged user to Domain Administrator.
+TheFrizz is a retired Windows Server 2022 AD box chaining a Gibbon-LMS arbitrary file write (CVE-2023-45878) into webshell RCE, credential discovery, Kerberos-based domain access, and GPO permission abuse to reach Domain Admin.
 
 ---
 
@@ -122,3 +122,26 @@ I then used a revshell powershell oneliner.
 
 This reulsts in a shell as w.webservice
 ![](assets/img/htb/thefrizz/thefrizz17.png)
+
+## Shell as f.frizzle
+### config.php
+Searching in the current directory shows a config.php file. Upon inspecting, it shows credentials for mysql.
+![](assets/img/htb/thefrizz/configexposure.png)
+![](assets/img/htb/thefrizz/mysqlcreds.png)
+
+### MySQL
+The MySQL executable is found in the `C:\xampp\mysql\bin` directory. I use this to login and inspect further.
+
+`.\mysql.exe -u MrGibbonsDB -p"MisterGibbs!Parrot!?1" -e "show databases;"`
+![](assets/img/htb/thefrizz/mysql0showdatabases.png)
+
+Database gibbon looks good, so to show tables use:
+
+`.\mysql.exe -u MrGibbonsDB -p"MisterGibbs!Parrot!?1" -e "show tables;" gibbon`
+![](assets/img/htb/thefrizz/mysql1.png)
+![](assets/img/htb/thefrizz/mysql2gibbonperson.png)
+
+Then select all the data from gibbonperson which results in a password hash and salt.
+
+`.\mysql.exe -u MrGibbonsDB -p"MisterGibbs!Parrot!?1" -e "USE gibbon; SELECT * FROM gibbonperson;" -E`
+![](assets/img/htb/thefrizz/passwordhash.png)
