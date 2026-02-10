@@ -46,6 +46,13 @@ After the Nmap scan revealed the domain frizz.htb, I added it to /etc/hosts to e
 
 ---
 
+## SMB 445, 139
+Checked smb via `nxc`. No creds so unable to proceed further here.
+`nxc smb 10.129.232.168`
+![](assets/img/htb/thefrizz/thefrizz9.png)
+
+---
+
 ## Web Enumeration (Port 80)
 ### Initial Access to the Web App
 Browising to port 80 presents a public “Walker­ville Elementary School” site with a Staff Login link, which led to a Gibbon-LMS instance.
@@ -55,8 +62,9 @@ Browising to port 80 presents a public “Walker­ville Elementary School” sit
 ---
 
 ### Directory Brute Force
-I targeted the Gibbon-LMS application with directory brute-forcing to identify accessible files and folders relevant to exploitation.
+Ran `gobuster` against the Gibbon-LMS application for anything interesting.
 ![](assets/img/htb/thefrizz/thefrizz8.png)
+
 ---
 
 ## Initial Access (Web → Shell)
