@@ -68,5 +68,15 @@ Ran `gobuster` against the Gibbon-LMS application for anything interesting.
 ---
 
 ## Initial Access (Web → Shell)
-### CVE-2023-45878
+### CVE-2023-45878 (Gibbon-LMS Arbitrary File Write)
+
+While researching the Gibbon-LMS version, I found CVE-2023-45878, an unauthenticated arbitrary file write vulnerability in `modules/Rubrics/rubrics_visualise_saveAjax.php`.  
+
+The endpoint expects a base64-encoded image in the `img` parameter, but it simply:
+1) extracts everything after the comma,  
+2) base64-decodes it, and  
+3) writes the result to disk using a user-controlled filename (`path`).  
+
+Because the application does **no content validation and no file extension restrictions**, we can base64-encode PHP code and save it as `shell.php`, giving us remote command execution through the web server.
+![](assets/img/htb/thefrizz/thefrizz10.png)
 
