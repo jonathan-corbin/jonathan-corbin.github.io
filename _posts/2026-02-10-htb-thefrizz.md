@@ -36,7 +36,7 @@ Run a targeted service and script scan against only the discovered open ports.
 
 ---
 
-### Host Resolution
+### DNS/Host Resolution
 After the Nmap scan revealed the domain frizz.htb, I added it to /etc/hosts to enable proper name resolution. When the web page on port 80 failed to load correctly, I observed it was redirecting to frizzdc.frizz.htb, so I added this hostname as well.
 
 ![](assets/img/htb/thefrizz/thefrizz3.png)
@@ -46,34 +46,22 @@ After the Nmap scan revealed the domain frizz.htb, I added it to /etc/hosts to e
 
 ---
 
-## Service Enumeration
-### 80
-port 80
-
-`nxc smb 10.129.18.74 -u '' -p '' --shares`
-![](/assets/img/htb/Active/active03.png)
-
-SMB shows a readable share called Replication. Use `smbclient` to pull the share.
-
-`mkdir -p Replication && cd Replication`
-
-`smbclient //10.129.18.74/Replication -N -I 10.129.18.74 -c "recurse; prompt; mget *"`
-![](/assets/img/htb/Active/active05.png)
-
-Inspect what was pulled down.
-`tree -a -h -f --dirsfirst`
-![](/assets/img/htb/Active/active04.png)
+## Web Enumeration (Port 80)
+### Initial Access to the Web App
+Browising to port 80 presents a public “Walker­ville Elementary School” site with a Staff Login link, which led to a Gibbon-LMS instance.
+![](assets/img/htb/thefrizz/thefrizz6.png)
+![](assets/img/htb/thefrizz/thefrizz7.png)
 
 ---
 
-## Initial Access
-### GPP cPassword (Groups.xml)
-Inside is a Groups.xml file — a classic GPP artifact known to store recoverable credentials. 
-Group Policy Preferences (GPP) allowed administrators to push local users, passwords, and group changes through policy files stored in SYSVOL. These files often contain a field called cpassword, which is reversibly encrypted with a public AES key — meaning anyone who can read SYSVOL can decrypt it.
-Typical location:
-`\\<DOMAIN>\SYSVOL\<DOMAIN>\Policies\{GUID}\Machine\Preferences\Groups\Groups.xml`
-If present, this usually yields a reusable local admin password and can sometimes lead to domain compromise.
-Primary tool to exploit:
+### Directory Brute Force
+I targeted the Gibbon-LMS application with directory brute-forcing to identify accessible files and folders relevant to exploitation.
+![](assets/img/htb/thefrizz/thefrizz8.png)
+---
+
+## Initial Access (Web → Shell)
+### CVE-2023-45878
+test
 [gpp-decrypt](https://github.com/t0thkr1s/gpp-decrypt)
 
 `grep -i cpassword Groups.xml`
