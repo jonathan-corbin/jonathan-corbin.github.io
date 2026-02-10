@@ -36,15 +36,15 @@ Run a targeted service and script scan against only the discovered open ports.
 ---
 
 ### Host Resolution
-Add the target hostname to /etc/hosts.
-
-`echo '10.129.18.74 active.htb' | sudo tee -a /etc/hosts`
-
+After the Nmap scan revealed the domain frizz.htb, I added it to /etc/hosts to enable proper name resolution. When the web page on port 80 failed to load correctly, I observed it was redirecting to frizzdc.frizz.htb, so I added this hostname as well.
+![](assets/img/htb/thefrizz/thefrizz3.png)![](assets/img/htb/thefrizz/thefrizz4.png)
+`echo '10.129.18.74 thefrizz.htb' | sudo tee -a /etc/hosts`
+`echo '10.129.232.168 frizzdc.frizz.htb' | sudo tee -a /etc/hosts`
 ---
 
 ## Service Enumeration
-### SMB
-AD is confirmed. Enumerate SMB with NetExec for any open shares.
+### 80
+port 80
 
 `nxc smb 10.129.18.74 -u '' -p '' --shares`
 ![](/assets/img/htb/Active/active03.png)
