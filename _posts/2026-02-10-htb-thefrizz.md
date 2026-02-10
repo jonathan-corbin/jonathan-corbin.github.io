@@ -11,6 +11,7 @@ image:
 ---
 
 TheFrizz is a retired Windows Server 2022 Active Directory box that chains a vulnerable Gibbon-LMS file upload (CVE-2023-45878) to gain a web shell, harvest database credentials, pivot into AD with Kerberos authentication, and abuse GPO permissions to escalate from a low-privileged user to Domain Administrator.
+
 ---
 
 ## Recon
