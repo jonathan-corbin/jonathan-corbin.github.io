@@ -37,12 +37,13 @@ Run a targeted service and script scan against only the discovered open ports.
 ---
 
 ### DNS/Host Resolution
-`frizz.htb` and `frizzdc.frizz.htb` are added to `/etc/hosts` to enable proper name resolution.
+Add `frizz.htb` and `frizzdc.frizz.htb` to `/etc/hosts` to enable proper name resolution.
 
-![](assets/img/htb/thefrizz/thefrizz3.png)
 `echo '10.129.18.74 thefrizz.htb' | sudo tee -a /etc/hosts`
-![](assets/img/htb/thefrizz/thefrizz44.png)
+![](assets/img/htb/thefrizz/thefrizz3.png)
 `echo '10.129.232.168 frizzdc.frizz.htb' | sudo tee -a /etc/hosts`
+![](assets/img/htb/thefrizz/thefrizz44.png)
+
 
 ---
 
