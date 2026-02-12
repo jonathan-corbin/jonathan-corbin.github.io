@@ -130,7 +130,7 @@ From the listed tables, gibbonperson appears to store user account information. 
 ![](assets/img/htb/thefrizz/passwordhash.png)
 
 ### Hashcat
-Using the Hashcat reference: https://hashcat.net/wiki/doku.php?id=example_hashes The format corresponds to mode 1420. Prepare hash file:  
+Using the [Hashcat example hashes reference](https://hashcat.net/wiki/doku.php?id=example_hashes), the format corresponds to mode 1420. Prepare hash file:  
 `echo "067f746faca44f170c6cd9d7c4bdac6bc342c608687733f80ff784242b0b0c03:/aACFhikmNopqrRTVz2489" > hash.txt`
 ![](assets/img/htb/thefrizz/hashcatref.png)
 ![](assets/img/htb/thefrizz/hashcatecho.png)
