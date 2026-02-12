@@ -47,9 +47,8 @@ Run a targeted service and script scan against only the discovered open ports.
 ---
 
 ## SMB 445, 139
-Checked smb via `nxc`. Null session does not work, will move on until I get some creds.
-`nxc smb 10.129.232.168`
-![](assets/img/htb/thefrizz/thefrizz9.png)
+Nmap shows message signing enabled and required. `nxc` confirms SMBv1 is disabled and NTLM authentication is not accepted. Quick null and guest checks both fail, indicating valid domain credentials are required before SMB enumeration is possible.
+![](assets/img/htb/thefrizz/thefrizz99.png)
 
 ---
 
