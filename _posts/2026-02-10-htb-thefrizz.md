@@ -140,7 +140,7 @@ Run Hashcat:
 
 ---
 
-## Privelage Escalation
+## Domain Access
 ### Credential Validation
 With the cracked password for f.frizzle, first validate the credentials against SMB.  
 `nxc smb frizzdc.frizz.htb -u f.frizzle -p 'Jenni_Luvs_Magic23'`
@@ -192,3 +192,17 @@ Export the ticket:
 
 Verify with `klist`. Kerberos authentication is now established for f.frizzle.
 ![](assets/img/htb/thefrizz/klist.png)
+
+### Kerberos SSH Access
+With a valid TGT loaded, SSH access is attempted using Kerberos authentication.  
+`ssh f.frizzle@frizz.htb -k`
+![](assets/img/htb/thefrizz/sshk.png)
+Resulting in a PowerShell session as `f.frizzle`.
+
+## Domain Enumeration
+After gaining interactive access as f.frizzle, enumerate group membership and domain privileges.
+
+
+## Privilege Escalation
+
+
