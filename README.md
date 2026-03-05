@@ -1,3 +1,11 @@
-# Security Labs
+# Jonathan Corbin
 
-Technical walkthroughs and hands-on lab notes from controlled environments.
+Security professional studying AI/ML security.
+
+## Projects
+
+- **Enterprise AI Safety** - Securing enterprise AI tool usage
+- **HTB AI Red Teamer Writeups** - HackTheBox walkthrough documentation
+- **OSCP & OSAI Prep** - Certification study notes
+
+Security+, OSCP & OSAI Candidate.
