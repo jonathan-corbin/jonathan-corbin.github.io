@@ -1,11 +1,4 @@
-# Jonathan Corbin
+## Security Projects
 
-Security professional studying AI/ML security.
-
-## Projects
-
-- **Enterprise AI Safety** - Securing enterprise AI tool usage
-- **HTB AI Red Teamer Writeups** - HackTheBox walkthrough documentation
-- **OSCP & OSAI Prep** - Certification study notes
-
-Security+, OSCP & OSAI Candidate.
+- [Enterprise AI Safety](https://github.com/jonathan-corbin/Enterprise-AI-Safety) - Securing enterprise AI tool usage
+- [HTB AI Red Teamer Writeups](https://github.com/jonathan-corbin/HTB-AI-Red-Teamer-Writeups) - HackTheBox walkthroughs
