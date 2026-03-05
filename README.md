@@ -2,13 +2,10 @@
 
 Security professional focused on enterprise AI safety and LLM security.
 
-## Current Work
+**Website:** https://jonathan-corbin.github.io/ [WIP]
 
-- [Enterprise AI Safety](https://github.com/jonathan-corbin/Enterprise-AI-Safety) - Securing enterprise AI tool usage and implementation practices
+## Research
+
+- [Enterprise AI Safety](https://github.com/jonathan-corbin/Enterprise-AI-Safety) - Documenting enterprise AI security practices and implementation frameworks
 
 Security+ certified. Studying for OSCP and OSAI.
-
----
-
-*Building practical security solutions.*
-```
