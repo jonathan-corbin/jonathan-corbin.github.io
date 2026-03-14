@@ -1,5 +1,5 @@
 # Jonathan Corbin
 
-Security professional focused on enterprise AI safety and LLM security.
+HackTheBox machine writeups — enumeration, exploitation, and privilege escalation across Windows and Linux.
 
 **Website:** https://jonathan-corbin.github.io/ [WIP]
